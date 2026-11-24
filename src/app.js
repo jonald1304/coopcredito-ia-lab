@@ -23,7 +23,31 @@
    e.preventDefault();
    // DELIBERADAMENTE: validación insuficiente; se debe identificar y corregir en el taller.
    const data={ingreso:Number($('ingreso').value), deuda:Number($('deuda').value), atrasos:Number($('atrasos').value), antiguedad:Number($('antiguedad').value), monto:Number($('monto').value)};
-   const result=CoopModel.predict(model,data);
+   const errores = [];
+
+if (data.ingreso <= 0 || !Number.isFinite(data.ingreso)) {
+  errores.push("El ingreso debe ser mayor que 0.");
+}
+
+if (data.monto <= 0 || !Number.isFinite(data.monto)) {
+  errores.push("El monto debe ser mayor que 0.");
+}
+
+if (data.deuda < 0 || data.deuda > 100) {
+  errores.push("El endeudamiento debe estar entre 0 y 100%.");
+}
+
+if (!Number.isInteger(data.atrasos) ||
+    data.atrasos < 0 || data.atrasos > 12) {
+  errores.push("Los atrasos deben estar entre 0 y 12.");
+}
+
+if (errores.length > 0) {
+  $('result').hidden = true;
+  alert("Corrige estos errores:\n" + errores.join("\n"));
+  return;
+}
+    const result=CoopModel.predict(model,data);
    $('result').hidden=false;
    $('risk').textContent=result.classification;
    $('risk').className='risk '+result.classification.toLowerCase();
